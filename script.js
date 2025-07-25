@@ -245,6 +245,21 @@ function removeMobileControls() {
   if (controls) controls.remove();
 }
 
+// --- スマホ用canvasリサイズ ---
+function resizeCanvasForMobile() {
+  if (isMobile()) {
+    const w = window.innerWidth;
+    const h = Math.min(window.innerHeight, w * 0.75);
+    canvas.width = w;
+    canvas.height = h;
+  } else {
+    canvas.width = 800;
+    canvas.height = 600;
+  }
+}
+window.addEventListener('resize', resizeCanvasForMobile);
+resizeCanvasForMobile();
+
 // ゲームループ
 function gameLoop() {
   // 画面クリア
@@ -449,6 +464,7 @@ function startGame() {
   autoBeamTimer = 0;
   if (isMobile()) createMobileControls();
   else removeMobileControls();
+  resizeCanvasForMobile(); // ゲーム開始時にもリサイズ
 }
 
 function resetGame() {
@@ -456,13 +472,28 @@ function resetGame() {
   score = 0;
   // 今後: ゲーム状態リセット
   removeMobileControls();
+  resizeCanvasForMobile(); // ゲームオーバー時にもリサイズ
 }
 
 // --- 画面リサイズ時にコントロール調整 ---
-window.addEventListener('resize', () => {
-  if (gameState === GAME_STATE.PLAYING && isMobile()) createMobileControls();
+// ゲーム開始・リセット時にもリサイズ
+function startGame() {
+  resizeCanvasForMobile();
+  // 今後: プレイヤー・障害物・ビーム初期化
+  player = new Player();
+  beams = [];
+  obstacles = [];
+  obstacleTimer = 0;
+  nextObstacleInterval = 2000;
+  autoBeamTimer = 0;
+  if (isMobile()) createMobileControls();
   else removeMobileControls();
-});
+}
+function resetGame() {
+  resizeCanvasForMobile();
+  // 今後: ゲーム状態リセット
+  removeMobileControls();
+}
 
 // ゲームループ開始
 requestAnimationFrame(gameLoop); 
