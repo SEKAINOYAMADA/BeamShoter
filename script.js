@@ -451,6 +451,15 @@ document.addEventListener('touchstart', (e) => {
   }
 });
 
+// --- スマホ画面タップでゲーム開始 ---
+document.body.addEventListener('touchstart', (e) => {
+  if (gameState === GAME_STATE.READY) {
+    startGame();
+  } else if (gameState === GAME_STATE.GAMEOVER) {
+    resetGame();
+  }
+});
+
 function startGame() {
   gameState = GAME_STATE.PLAYING;
   startTime = performance.now();
